@@ -1,0 +1,26 @@
+#!/sbin/openrc-run
+name="AddyCMOS ${RC_SVCNAME}"
+description="AddyCMOS Root Resize"
+
+BINSH="/bin/sh"
+RSRT=" /sbin/resizeroot"
+
+depend()
+{
+        after *
+}
+
+start() {
+    ebegin "Resizing AddyCMOS Root Partion"
+    start-stop-daemon --start --exec $BINSH -- $RSRT
+    eend $?
+}
+
+status() { 
+    einfo "One-time AddyCMOS Root Resize"
+}
+
+stop() {
+    ebegin "Resize Complete"
+    eend $?
+}

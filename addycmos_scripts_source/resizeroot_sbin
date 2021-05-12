@@ -1,0 +1,22 @@
+ DRIVENAME=$(blkid | grep -i 'PARTUUID="f43c52fb-03"' | awk '{print $1}')
+
+ if [[ $(expr index "$DRIVNAME" 'p3:') != 0 ]];
+ then
+  	DNFK=$(echo $DRIVENAME | awk '{sub(/p3:.*/,"",$1); print $1}')
+ fi
+
+ if [[ $(expr index "$DRIVENAME" '3:') != 0 ]];
+ then
+	DNFK=$(echo $DRIVENAME | awk '{sub(/3:.*/,"",$1); print $1}')
+ fi
+
+ echo "Resizing AddyCMOS root."
+ parted -a optimal $DNFK ---pretend-input-tty resizepart 3 << EOF
+Yes 
+100%
+EOF
+ 
+ partprobe
+ FS=$(echo $DRIVENAME | awk ' {sub(/:.*/,"",$1); print$1}')
+ resize2fs $FS
+ echo "Resize complete." && rc-update del resizeroot
